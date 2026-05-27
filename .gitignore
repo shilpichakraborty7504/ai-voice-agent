@@ -8,3 +8,13 @@ wheels/
 
 # Virtual environments
 .venv
+
+#Database
+*.db
+
+#Environment variables
+.env
+
+#Cache
+__pycache__/
+

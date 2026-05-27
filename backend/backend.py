@@ -1,6 +1,6 @@
 # Import database objects
 
-from database import init_db, Appointment, get_db
+from backend.database import init_db, Appointment, get_db
 
 
 init_db()
