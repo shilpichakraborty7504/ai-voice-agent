@@ -8,10 +8,10 @@ This page documents how the voice agent is set up, so the prompt and tools live 
 
 | Setting | Value |
 |---|---|
-| Speech-to-text | `[provider and model]` |
-| LLM | `[provider and model]` |
-| Voice | `[provider and voice]` |
-| First message | "Hello, thank you for calling Dubai Hospital. I can help you check available times, book or cancel an appointment. How can I help?" |
+| Speech-to-text | Deepgram Nova 3 (General, English) |
+| LLM | OpenAI GPT-6 Luna |
+| Voice | Vapi "Sagar" (v2) |
+| First message | "Hi. My name is Akash from Asrani Clinic. How can I help you today?" |
 
 ## System prompt
 
@@ -89,18 +89,3 @@ All tools call the FastAPI backend through the ngrok HTTPS URL, and all are `POS
 
 - **Possible errors:** `404` (no matching appointment)
 
-## Test calls to run
-
-Record the result of each in a table. This also becomes evidence for the case study.
-
-| # | Scenario | Expected behaviour | Result |
-|---|---|---|---|
-| 1 | Ask what times are free tomorrow | Reads out two or three open times | |
-| 2 | Book tomorrow at 10am | Reads details back, books, confirms | |
-| 3 | Ask for availability again | The booked time is no longer offered | |
-| 4 | Book a time that is already taken | Explains the clash, offers another time | |
-| 5 | Cancel an existing appointment | Confirms, cancels | |
-| 6 | Cancel when none exists | Says none was found, offers help | |
-| 7 | Caller changes their mind mid-call | Updates the details without restarting | |
-| 8 | Caller asks a medical question | Declines and offers the front desk | |
-| 9 | Vague date ("sometime next week") | Asks for a specific date | |

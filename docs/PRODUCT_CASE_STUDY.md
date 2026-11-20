@@ -1,7 +1,9 @@
 # Product Case Study: AI Voice Agent for Hospital Appointments
 
-> **Status:** prototype. The user needs below are working assumptions from my own reasoning, not findings from interviews. Where I have real data, I say so.
-> `[Replace the assumptions with anything real: a conversation with a clinic receptionist, a survey, a test call with friends or family, etc.]`
+• The agent first booked appointments for the wrong year (2027), because it didn't know today's date. Adding the current date to the prompt fixed it.
+• A GET lookup returned validation errors from the voice tool, so availability became a POST with a JSON body.
+• The agent read out every free slot one by one, which sounded unnatural. The backend now returns free time ranges, such as "12 PM to 5 PM".
+• It tried to book before the time was confirmed, so the prompt now forbids that.
 
 ## 1. Problem
 
@@ -77,4 +79,35 @@ Call logging ranks first because without it I cannot measure the north-star metr
 
 ## 8. What I learned
 
-`[Fill in your own words: what surprised you about the voice agent's behaviour, which prompt changes mattered, what broke in testing, and what you would do differently.]`
+**What surprised me**
+- A tool showing "Completed successfully" in Vapi only means the request was made,
+  not that my backend answered correctly. Twice the agent said the service wasn't
+  responding while Vapi showed a green tick, because my tunnel was offline or the
+  request was rejected. I learned to check the backend's own logs.
+- The agent didn't know today's date. It booked appointments for 2027 until I
+  added the current date to the prompt, and the bookings looked "missing" in my
+  portal because I was checking the wrong year.
+- The agent read out every free slot one by one ("10, 10 30, 12..."), which sounded
+  unnatural on a call. Asking it to summarise in the prompt was less reliable than
+  having the backend return ready-made ranges, so I moved that logic into the API.
+
+**Which changes mattered most**
+- Adding today's date to the system prompt.
+- Telling the agent not to book until the caller has confirmed an exact time. It
+  had tried to book while still asking for availability.
+- Returning times in 12-hour format, since "4:30 PM" sounds better spoken than "16:30".
+- Giving the voice agent an availability endpoint that returns times only, so it
+  never has to read out other patients' names or reasons.
+
+**What broke in testing**
+- A GET request with the date in the address returned validation errors from the
+  voice tool, so I switched it to a POST with a JSON body, like my other tools.
+- A missing trailing slash on a tool URL, and an ngrok tunnel that wasn't running.
+
+**What I would do differently**
+- Log every call and its outcome from the start, so I could measure booking
+  completion rate instead of judging by feel.
+- Write the test-call table first and run it after every prompt change.
+- Deploy the API with a stable address earlier, instead of relying on a local tunnel.
+- Enforce clinic hours when booking, and require a second detail (such as a phone
+  number) before canceling.
